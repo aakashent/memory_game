@@ -9,10 +9,14 @@
 <body>
   <div class="container">
     <h1>Memory Game</h1>
+    <div class="mode-selection">
+      <button onclick="startMemoryGame()">Memory Match Mode</button>
+      <button onclick="startMemorySpan()">Memory Span Mode</button>
+    </div>
     <div class="game-board" id="gameBoard"></div>
     <div class="info-panel">
-      <p>Moves: <span id="moveCount">0</span></p>
-      <button onclick="startGame()">Restart Game</button>
+      <p>Level: <span id="level">1</span></p>
+      <button onclick="restartGame()">Restart Game</button>
     </div>
   </div>
   <script src="script.js"></script>
