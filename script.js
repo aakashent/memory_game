@@ -28,7 +28,7 @@ function startGame() {
     const card = document.createElement("div");
     card.classList.add("card");
     card.dataset.symbol = symbol;
-    card.innerText = symbol;
+    card.innerText = ""; // Initially hide the emoji
     card.addEventListener("click", flipCard);
     gameBoard.appendChild(card);
   });
@@ -38,6 +38,7 @@ function flipCard() {
   if (flippedCards.length === 2) return;
 
   this.classList.add("flip");
+  this.innerText = this.dataset.symbol; // Show the emoji when flipped
   this.style.pointerEvents = "none";
   flippedCards.push(this);
 
@@ -57,6 +58,7 @@ function flipCard() {
       setTimeout(() => {
         flippedCards.forEach(card => {
           card.classList.remove("flip");
+          card.innerText = ""; // Hide the emoji again
           card.style.pointerEvents = "auto";
         });
         flippedCards = [];
