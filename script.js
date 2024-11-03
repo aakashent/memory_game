@@ -4,12 +4,14 @@ const cardsArray = [
 ];
 
 let gameBoard = document.getElementById("gameBoard");
-let levelDisplay = document.getElementById("level");
+let statusLabel = document.getElementById("statusLabel");
+let statusValue = document.getElementById("statusValue");
 
-let mode = "memoryGame"; // To track the game mode
+let mode = "memoryGame"; // Track the game mode
 let sequence = [];
 let playerSequence = [];
 let level = 1;
+let moves = 0;
 
 // Shuffle function
 function shuffle(array) {
@@ -19,7 +21,8 @@ function shuffle(array) {
 // Restart the game
 function restartGame() {
   level = 1;
-  levelDisplay.innerText = level;
+  moves = 0;
+  updateStatusDisplay();
   if (mode === "memoryGame") {
     startMemoryGame();
   } else {
@@ -31,7 +34,8 @@ function restartGame() {
 function startMemoryGame() {
   mode = "memoryGame";
   level = 1;
-  levelDisplay.innerText = level;
+  moves = 0;
+  updateStatusDisplay();
   gameBoard.innerHTML = '';
   setupMemoryMatch();
 }
@@ -40,14 +44,26 @@ function startMemoryGame() {
 function startMemorySpan() {
   mode = "memorySpan";
   level = 1;
-  levelDisplay.innerText = level;
+  moves = 0;
+  updateStatusDisplay();
   gameBoard.innerHTML = '';
   setupMemorySpan();
 }
 
+// Update status display based on the game mode
+function updateStatusDisplay() {
+  if (mode === "memoryGame") {
+    statusLabel.innerText = "Moves: ";
+    statusValue.innerText = moves;
+  } else {
+    statusLabel.innerText = "Level: ";
+    statusValue.innerText = level;
+  }
+}
+
 // Memory Match game setup
 function setupMemoryMatch() {
-  let moves = 0;
+  moves = 0;
   let flippedCards = [];
   let matchedPairs = 0;
   const shuffledCards = shuffle([...cardsArray]);
@@ -66,6 +82,7 @@ function setupMemoryMatch() {
 
       if (flippedCards.length === 2) {
         moves++;
+        updateStatusDisplay(); // Update moves count
         if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
           flippedCards.forEach(card => card.classList.add("matched"));
           matchedPairs++;
@@ -144,7 +161,7 @@ function handleCardClickSpan() {
   } else if (playerSequence.length === sequence.length) {
     // Level up if the player completes the sequence
     level++;
-    levelDisplay.innerText = level;
+    updateStatusDisplay(); // Update level count
     playerSequence = [];
     setTimeout(showSequence, 1000); // Add a new card and show the updated sequence
   }
