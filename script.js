@@ -7,24 +7,25 @@ let gameBoard = document.getElementById("gameBoard");
 let statusLabel = document.getElementById("statusLabel");
 let statusValue = document.getElementById("statusValue");
 
-let mode = ""; // Track the game mode
+let mode = ""; // Track the current game mode
 let sequence = [];
 let playerSequence = [];
 let level = 1;
 let moves = 0;
 
-// Shuffle function
+// Function to shuffle an array
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-// Restart the game
+// Function to restart the game
 function restartGame() {
   level = 1;
   moves = 0;
-  playerSequence = [];
   sequence = [];
+  playerSequence = [];
   updateStatusDisplay();
+  
   if (mode === "memoryGame") {
     startMemoryGame();
   } else if (mode === "memorySpan") {
@@ -52,7 +53,7 @@ function startMemorySpan() {
   setupMemorySpan();
 }
 
-// Update status display based on the game mode
+// Update the status display based on the current game mode
 function updateStatusDisplay() {
   if (mode === "memoryGame") {
     statusLabel.innerText = "Moves: ";
@@ -73,8 +74,9 @@ function setupMemoryMatch() {
     const card = document.createElement("div");
     card.classList.add("card");
     card.dataset.symbol = symbol;
-    card.innerText = ""; // Initially hide the emoji
+    card.innerText = ""; // Hide the emoji initially
     card.addEventListener("click", function () {
+      // Prevent more than two cards from being flipped at once
       if (flippedCards.length === 2 || card.classList.contains("matched")) return;
 
       card.classList.add("flip");
@@ -82,16 +84,20 @@ function setupMemoryMatch() {
       flippedCards.push(card);
 
       if (flippedCards.length === 2) {
-        moves++;
-        updateStatusDisplay(); // Update moves count
+        moves++; // Increment moves when two cards are flipped
+        updateStatusDisplay(); // Update the moves display
+
         if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
           flippedCards.forEach(card => card.classList.add("matched"));
           matchedPairs++;
-          if (matchedPairs === cardsArray.length / 2) {
-            setTimeout(() => alert("Congratulations! You've won the game!"), 300);
-          }
           flippedCards = [];
+
+          // Check if all pairs are matched
+          if (matchedPairs === cardsArray.length / 2) {
+            setTimeout(() => alert("Congratulations! You've completed Memory Match mode!"), 300);
+          }
         } else {
+          // If no match, flip cards back over after a short delay
           setTimeout(() => {
             flippedCards.forEach(card => {
               card.classList.remove("flip");
@@ -112,8 +118,8 @@ function setupMemorySpan() {
   playerSequence = [];
   gameBoard.innerHTML = '';
 
-  // Create the card grid for span mode
-  const shuffledCards = shuffle([...cardsArray]).slice(0, 8); // Use only 8 unique symbols
+  // Create the card grid for span mode using a subset of unique cards
+  const shuffledCards = shuffle([...cardsArray]).slice(0, 8);
   shuffledCards.forEach(symbol => {
     const card = document.createElement("div");
     card.classList.add("card");
@@ -127,10 +133,10 @@ function setupMemorySpan() {
   showSequence();
 }
 
-// Display the sequence to the player
+// Display the sequence for the player to memorize
 function showSequence() {
   const cards = Array.from(document.querySelectorAll(".card"));
-  sequence.push(cards[Math.floor(Math.random() * cards.length)]); // Add a random card to sequence
+  sequence.push(cards[Math.floor(Math.random() * cards.length)]); // Add a new random card to the sequence
 
   let delay = 500;
   sequence.forEach((card, index) => {
@@ -148,32 +154,33 @@ function showSequence() {
 
 // Handle player card selection in Memory Span mode
 function handleCardClickSpan() {
-  if (playerSequence.length >= sequence.length) return; // Prevent extra clicks
+  if (playerSequence.length >= sequence.length) return; // Prevent extra clicks after sequence is complete
 
   this.classList.add("flip");
   this.innerText = this.dataset.symbol;
   playerSequence.push(this);
 
-  // Check if the player sequence matches
+  // Check if the player sequence matches the game's sequence so far
   if (!checkSequence()) {
-    alert("Incorrect sequence! Try again from level 1.");
+    alert("Incorrect sequence! Starting over from level 1.");
     level = 1;
     restartGame();
   } else if (playerSequence.length === sequence.length) {
-    // Level up if the player completes the sequence
+    // Level up if the player completes the sequence correctly
     level++;
-    updateStatusDisplay(); // Update level count
+    updateStatusDisplay(); // Update level display
     playerSequence = [];
     setTimeout(showSequence, 1000); // Add a new card and show the updated sequence
   }
 
+  // Flip the card back over after a brief delay
   setTimeout(() => {
     this.classList.remove("flip");
     this.innerText = "";
   }, 500);
 }
 
-// Check if the player's sequence matches the game's sequence
+// Check if the player's sequence matches the game's sequence so far
 function checkSequence() {
   for (let i = 0; i < playerSequence.length; i++) {
     if (playerSequence[i] !== sequence[i]) {
