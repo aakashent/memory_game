@@ -7,7 +7,7 @@ let gameBoard = document.getElementById("gameBoard");
 let statusLabel = document.getElementById("statusLabel");
 let statusValue = document.getElementById("statusValue");
 
-let mode = "memoryGame"; // Track the game mode
+let mode = ""; // Track the game mode
 let sequence = [];
 let playerSequence = [];
 let level = 1;
@@ -22,10 +22,12 @@ function shuffle(array) {
 function restartGame() {
   level = 1;
   moves = 0;
+  playerSequence = [];
+  sequence = [];
   updateStatusDisplay();
   if (mode === "memoryGame") {
     startMemoryGame();
-  } else {
+  } else if (mode === "memorySpan") {
     startMemorySpan();
   }
 }
@@ -55,7 +57,7 @@ function updateStatusDisplay() {
   if (mode === "memoryGame") {
     statusLabel.innerText = "Moves: ";
     statusValue.innerText = moves;
-  } else {
+  } else if (mode === "memorySpan") {
     statusLabel.innerText = "Level: ";
     statusValue.innerText = level;
   }
@@ -63,7 +65,6 @@ function updateStatusDisplay() {
 
 // Memory Match game setup
 function setupMemoryMatch() {
-  moves = 0;
   let flippedCards = [];
   let matchedPairs = 0;
   const shuffledCards = shuffle([...cardsArray]);
